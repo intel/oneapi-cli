@@ -1,0 +1,14 @@
+[
+    {
+        "path":"zoo",
+        "sha":"1",
+        "example":{
+            "name":"zoo-python",
+            "categories":[
+                "TestCats"
+            ],
+            "description":"It is I, Zebra",
+            "sample_readme_uri":"https://software.intel"
+        }
+    }
+]

@@ -1,0 +1,13 @@
+/bin/
+/build/
+/config.*
+!config.toml.dist
+/docker-compose.override.yml
+/var/
+/vendor/
+cover.out
+
+# IDE integration
+/.vscode/*
+!/.vscode/launch.json
+!/.vscode/tasks.json

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+go test -coverpkg=./... -coverprofile=cover.out ./...
+go tool cover -func=cover.out
