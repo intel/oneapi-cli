@@ -79,7 +79,6 @@ const sweetComponentsJSON = `
     { "suiteId": "IOTKit", "componentId": "linux_kernel_build_tools", "primary": true },
     { "suiteId": "IOTKit", "componentId": "intel_system_debugger", "primary": true },
 
-    { "suiteId": "BringupKit", "componentId": "intel_vtune_amplifier", "primary": true },
     { "suiteId": "BringupKit", "componentId": "intel_socwatch", "primary": true },
     { "suiteId": "BringupKit", "componentId": "intel_system_debugger", "primary": true },
 
@@ -101,7 +100,6 @@ const sweetComponentsJSON = `
     { "suiteId": "oneAPIKit", "componentId": "intel_data_analytics_library", "primary": true },
     { "suiteId": "oneAPIKit", "componentId": "python", "primary": true },
     { "suiteId": "oneAPIKit", "componentId": "intel_advisor", "primary": true },
-    { "suiteId": "oneAPIKit", "componentId": "intel_vtune_amplifier", "primary": true },
     { "suiteId": "oneAPIKit", "componentId": "deep_neural_network", "primary": true },
     { "suiteId": "oneAPIKit", "componentId": "collective_communications_library", "primary": true },
     { "suiteId": "oneAPIKit", "componentId": "vpl", "primary": true },
@@ -109,7 +107,9 @@ const sweetComponentsJSON = `
     { "suiteId": "RenderKit", "componentId": "intel_embree", "primary": true },
     { "suiteId": "RenderKit", "componentId": "intel_ospray", "primary": true },
     { "suiteId": "RenderKit", "componentId": "open_image_denoise", "primary": true },
-    { "suiteId": "RenderKit", "componentId": "open_volume_kernel_library", "primary": true }
+    { "suiteId": "RenderKit", "componentId": "open_volume_kernel_library", "primary": true },
+
+    { "suiteId": "VTuneProfiler", "componentId": "intel_vtune_amplifier", "primary": true }
 ]
 `
 
@@ -118,14 +118,10 @@ const suitesJSON = `
     { "id": "HPCKit", "label": "Intel® oneAPI HPC Toolkit", "urlSlug": "hpc-kit", "baseToolkit": "dependency" },
     { "id": "IOTKit", "label": "Intel® oneAPI IoT Toolkit", "urlSlug": "iot-kit", "baseToolkit": "dependency" },
     { "id": "BringupKit", "label": "Intel® System Bring-Up Toolkit", "urlSlug": "bringup-kit", "baseToolkit": "recommended" },
-    {
-        "id": "DLDevKit",
-        "label": "Intel® oneAPI DL Framework Developer Toolkit",
-        "urlSlug": "dldev-kit",
-        "baseToolkit": "dependency"
-    },
+    { "id": "DLDevKit", "label": "Intel® oneAPI DL Framework Developer Toolkit", "urlSlug": "dldev-kit", "baseToolkit": "dependency" },
     { "id": "AIKit", "label": "Intel® oneAPI AI Analytics Toolkit", "urlSlug": "ai-kit", "baseToolkit": "recommended" },
     { "id": "oneAPIKit", "label": "Intel® oneAPI Base Toolkit", "urlSlug": "oneapi-kit" },
-    { "id": "RenderKit", "label": "Intel® oneAPI Rendering Toolkit", "urlSlug": "render-kit", "baseToolkit": "recommended" }
+    { "id": "RenderKit", "label": "Intel® oneAPI Rendering Toolkit", "urlSlug": "render-kit", "baseToolkit": "recommended" },
+    { "id": "VTuneProfiler", "label": "Intel® VTune™ Profiler", "urlSlug": "vtune-profiler", "baseToolkit": "recommended" }
 ]
 `
