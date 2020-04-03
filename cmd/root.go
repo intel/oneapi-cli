@@ -4,6 +4,7 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -15,7 +16,12 @@ import (
 )
 
 //SamplesEndpointDefault default samples endpoint
-const SamplesEndpointDefault = "https://iotdk.intel.com/samples-iss/2021.1-beta04/"
+const SamplesEndpointDefault = "https://iotdk.intel.com/samples-iss"
+
+//2021.1-beta05/
+
+//SampleLatestKey the location from the default path that points to a "latest version"
+const SampleLatestKey = "latest"
 
 //LocalStorageDefault the default path root where the local cache is kept
 const LocalStorageDefault = ".oneapi-cli"
@@ -89,9 +95,33 @@ func init() {
 	defaultBaseFilePath := filepath.Join(userHome, LocalStorageDefault)
 
 	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cmd.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&baseURL, "url", "u", SamplesEndpointDefault, "URL of remote sample aggregator")
+	rootCmd.PersistentFlags().StringVarP(&baseURL, "url", "u", getVersionInfo(), "URL of remote sample aggregator")
 	rootCmd.PersistentFlags().StringVarP(&baseFilePath, "directory", "d", defaultBaseFilePath, "location to store local oneapi samples cache")
 	rootCmd.PersistentFlags().StringSliceVarP(&enabledLanguages, "languages", "l", defaultLanguages, "enabled languages")
 	rootCmd.PersistentFlags().BoolVar(&ignoreOS, "ignore-os", false, "ignore Host-OS based filtering when showing/outputting samples")
 
+}
+
+//looks at the command bin path and looks for "version.txt" which
+//points to which sample version to look at. If it cant find it it
+//returns the Latestkey const
+func getVersionInfo() string {
+	bin, err := os.Executable()
+	if err != nil {
+		return fmt.Sprintf("%s/%s/", SamplesEndpointDefault, SampleLatestKey)
+	}
+	versionPath := filepath.Join(filepath.Dir(bin), "version.txt")
+
+	file, err := os.Open(versionPath)
+	if err != nil {
+		return fmt.Sprintf("%s/%s/", SamplesEndpointDefault, SampleLatestKey)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	scanner.Scan()
+	if err := scanner.Err(); err != nil {
+		return fmt.Sprintf("%s/%s/", SamplesEndpointDefault, SampleLatestKey)
+	}
+	return fmt.Sprintf("%s/%s/", SamplesEndpointDefault, scanner.Text())
 }
