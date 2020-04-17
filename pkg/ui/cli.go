@@ -378,11 +378,24 @@ func (cli *CLI) successModal(path string) {
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 			cli.app.Stop()
 			if buttonLabel != "Quit" {
-				fmt.Printf("%s\n", readme)
+
+				//The folloiwing is to reset the terminal
+				s, e := tcell.NewScreen()
+				if e != nil {
+					fmt.Fprintf(os.Stderr, "%v\n", e)
+					os.Exit(1)
+				}
+				if e = s.Init(); e != nil {
+					fmt.Fprintf(os.Stderr, "%v\n", e)
+					os.Exit(1)
+				}
+				s.Clear()
+				s.Fini()
+				fmt.Printf("\n")
+				fmt.Printf("%s\n", string(readme))
 			}
 		})
 	cli.app.SetRoot(modal, true)
-
 }
 
 func (cli *CLI) calcPath(projectPath string, prjName string, sample aggregator.Sample) (string, error) {
