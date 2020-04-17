@@ -100,7 +100,7 @@ func NewAggregator(URL string, FilePath string, languages []string, ignoreOS boo
 }
 
 func (a *Aggregator) isLocked() bool {
-	return fileExists(filepath.Join(a.localPath, cacheLockName))
+	return FileExists(filepath.Join(a.localPath, cacheLockName))
 }
 
 func (a *Aggregator) lock() {
@@ -130,7 +130,7 @@ func sampleWorker(a *Aggregator, jobs <-chan sampleWorkItem, results chan<- erro
 
 func (a *Aggregator) workSample(w sampleWorkItem) error {
 	path := filepath.Join(a.localPath, w.language, w.s.Path, w.language+".tar.gz")
-	if !fileExists(path) {
+	if !FileExists(path) {
 		url := a.baseURL.String() + "/" + w.s.Path + "/" + w.language + ".tar.gz"
 		if err := downloadFileDirect(path, url); err != nil {
 			return fmt.Errorf("failed to download sample '%s' - %v", w.s.Fields.Name, err)
@@ -162,7 +162,7 @@ func (a *Aggregator) syncLanguagesIndex() error {
 			log.Print("failed to connect to sample aggregator, attempting to use local cache\n")
 			a.Online = false
 		}
-		if fileExists(localPath) {
+		if FileExists(localPath) {
 			localHash, err := localHash(localPath)
 			if err != nil {
 				return err
@@ -224,7 +224,7 @@ func (a *Aggregator) Update() error {
 
 	for _, language := range a.languages {
 		localPath := filepath.Join(a.localPath, language+".json")
-		if !fileExists(localPath) {
+		if !FileExists(localPath) {
 			return fmt.Errorf("unable to find configured language json (%s)", language)
 		}
 		languageIndex, err := ioutil.ReadFile(localPath)
