@@ -274,7 +274,7 @@ func (cli *CLI) tree(language string) cview.Primitive {
 		if !ok {
 			return
 		}
-		cli.askPath(a, language)
+		cli.askPath(a, language, "", "")
 	})
 	tree.Box.SetBorder(true).SetTitle("Samples")
 	tree.SetTopLevel(1)
@@ -294,18 +294,36 @@ func (cli *CLI) tree(language string) cview.Primitive {
 }
 
 func (cli *CLI) updateDestinationDisplay(path string, box *cview.TextView) {
-	box.SetText("[yellow]Destination:[-:-:-] " + path)
-}
-func (cli *CLI) askPath(sample aggregator.Sample, language string) {
 
-	var base string
-	var dir string
+	output := "[yellow]Destination:[-:-:-] " + path
+	if !isPathEmpty(path) {
+		output = "[red]Warning! [-:-:-]" + output + " [red]Is not empty! [-:-:-]"
+	}
+	box.SetText(output)
+}
+
+func isPathEmpty(path string) bool {
+	if !aggregator.FileExists(path) {
+		return true
+	}
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return true
+	}
+	return (len(files) == 0)
+}
+
+func (cli *CLI) askPath(sample aggregator.Sample, language string, base string, dir string) {
+
+	if dir == "" {
+		dir = filepath.Base(sample.Path)
+	}
 	text := cview.NewTextView().SetWordWrap(true).
 		SetChangedFunc(func() {
 			cli.app.Draw()
 		}).SetDynamicColors(true)
 	form := cview.NewForm().
-		AddInputField("Directory", "", 20, nil, func(t string) {
+		AddInputField("Directory", base, 20, nil, func(t string) {
 			base = t
 			path, err := cli.calcPath(base, dir, sample)
 			if err != nil {
@@ -313,7 +331,7 @@ func (cli *CLI) askPath(sample aggregator.Sample, language string) {
 			}
 			cli.updateDestinationDisplay(path, text)
 		}).
-		AddInputField("Project Name", filepath.Base(sample.Path), 20, nil, func(t string) {
+		AddInputField("Project Name", dir, 20, nil, func(t string) {
 			dir = t
 			path, err := cli.calcPath(base, dir, sample)
 			if err != nil {
@@ -325,6 +343,10 @@ func (cli *CLI) askPath(sample aggregator.Sample, language string) {
 		AddButton("Create", func() {
 			path, err := cli.calcPath(base, dir, sample)
 			if err != nil {
+				return
+			}
+			if !isPathEmpty(path) {
+				cli.confirmOverwrite(sample, language, path, base, dir)
 				return
 			}
 			outPath, err := cli.createProject(sample, language, path)
@@ -353,6 +375,32 @@ func (cli *CLI) askPath(sample aggregator.Sample, language string) {
 	flex.SetBorder(true).SetTitle("Create Project").SetTitleAlign(cview.AlignLeft)
 
 	cli.app.SetRoot(flex, true)
+}
+
+func (cli *CLI) confirmOverwrite(sample aggregator.Sample, language string, path string, base string, dir string) {
+
+	text := fmt.Sprintf("Path %s is not empty, Creating the sample may overwrite some files.", path)
+	buttons := []string{"Cancel", "Confirm"}
+
+	modal := cview.NewModal().
+		SetText(text).
+		AddButtons(buttons).
+		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+
+			if buttonLabel != "Cancel" {
+				outPath, err := cli.createProject(sample, language, path)
+
+				if err != nil {
+					cli.app.Stop()
+					log.Fatal(err)
+				}
+				cli.successModal(outPath)
+				return
+			}
+			cli.askPath(sample, language, base, dir)
+		})
+	cli.app.SetRoot(modal, true)
+
 }
 
 func (cli *CLI) successModal(path string) {
