@@ -297,7 +297,7 @@ func (cli *CLI) updateDestinationDisplay(path string, box *cview.TextView) {
 
 	output := "[yellow]Destination:[-:-:-] " + path
 	if !isPathEmpty(path) {
-		output = "[red]Warning! [-:-:-]" + output + " [red]Is not empty! [-:-:-]"
+		output = "[red]Warning! [-]" + output + " [red]Is not empty![-]"
 	}
 	box.SetText(output)
 }
