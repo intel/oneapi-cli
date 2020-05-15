@@ -13,6 +13,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var sampleLang string
+
 // listCmd represents the list command
 var createCmd = &cobra.Command{
 	Use:    "create",
@@ -20,7 +22,7 @@ var createCmd = &cobra.Command{
 	Hidden: true,
 	Long: `Creates the sample based on the passed in path
 
-	i.e. oneapi-cli create my/long/path/from/index/json /tmp/mynewproject`,
+	i.e. oneapi-cli create -s cpp my/long/path/from/index/json /tmp/mynewproject`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		//Arg 0 being sample
@@ -31,8 +33,7 @@ var createCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		lang := "cpp" //temp
-		tarPath := filepath.Join(baseFilePath, aggregator.AggregatorLocalAPILevel, lang, args[0], lang+".tar.gz")
+		tarPath := filepath.Join(baseFilePath, aggregator.AggregatorLocalAPILevel, sampleLang, args[0], sampleLang+".tar.gz")
 
 		_, err := os.Stat(tarPath)
 		if os.IsNotExist(err) {
@@ -51,4 +52,5 @@ var createCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(createCmd)
+	createCmd.Flags().StringVarP(&sampleLang, "sampleLangauge", "s", "cpp", "specific language of the samples you want to create")
 }
