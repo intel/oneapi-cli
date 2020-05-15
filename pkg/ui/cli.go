@@ -295,7 +295,7 @@ func (cli *CLI) tree(language string) cview.Primitive {
 
 func (cli *CLI) updateDestinationDisplay(path string, box *cview.TextView) {
 
-	output := "[yellow]Destination:[-:-:-] " + path
+	output := "[yellow]Destination:[-] " + path
 	if !isPathEmpty(path) {
 		output = "[red]Warning! [-]" + output + " [red]Is not empty![-]"
 	}
