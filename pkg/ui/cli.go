@@ -477,7 +477,11 @@ func (cli *CLI) calcPath(projectPath string, prjName string, sample aggregator.S
 
 func (cli *CLI) createProject(selectedSample aggregator.Sample, lang string, projectPath string) (output string, err error) {
 	//Maybe here we might check if the tarball does not exists and the trigger the aggregator to atempt an update
-	tarPath := filepath.Join(cli.aggregator.GetLocalPath(), lang, selectedSample.Path, lang+".tar.gz")
+
+	tarPath, err := aggregator.GetTarBall(cli.aggregator.GetLocalPath(), cli.aggregator.GetURL(), lang, selectedSample.Path)
+	if err != nil {
+		return "", err
+	}
 
 	err = extractor.ExtractTarGz(tarPath, projectPath)
 	if err != nil {

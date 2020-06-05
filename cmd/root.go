@@ -33,6 +33,7 @@ var defaultLanguages = []string{"cpp", "python"}
 var enabledLanguages []string
 var userHome string
 var ignoreOS bool
+var bulk bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -55,7 +56,7 @@ var rootCmd = &cobra.Command{
 func getAggregator() *aggregator.Aggregator {
 	if cAggregator == nil {
 		var err error
-		cAggregator, err = aggregator.NewAggregator(baseURL, baseFilePath, enabledLanguages, ignoreOS)
+		cAggregator, err = aggregator.NewAggregator(baseURL, baseFilePath, enabledLanguages, ignoreOS, bulk)
 		if err != nil && err != aggregator.ErrCacheLock {
 			//Most errors we are going to find are network related :/
 			fmt.Printf("Failed to fetch sample index, this *may* be your network/proxy environment.\nYou might try setting http_proxy in your environment, for example:\n")
@@ -99,6 +100,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&baseFilePath, "directory", "d", defaultBaseFilePath, "location to store local oneapi samples cache")
 	rootCmd.PersistentFlags().StringSliceVarP(&enabledLanguages, "languages", "l", defaultLanguages, "enabled languages")
 	rootCmd.PersistentFlags().BoolVar(&ignoreOS, "ignore-os", false, "ignore Host-OS based filtering when showing/outputting samples")
+	rootCmd.PersistentFlags().BoolVar(&bulk, "full-sync", false, "download all samples at startup")
 
 }
 

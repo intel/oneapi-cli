@@ -36,6 +36,7 @@ type Aggregator struct {
 	Samples     Samples
 	Online      bool
 	ignoreOS    bool
+	Bulk        bool
 }
 
 const defaultRetry = 3
@@ -56,7 +57,7 @@ var ErrCacheLock = errors.New("aggregator cache is locked")
 const HTTPTimeout = 10
 
 //NewAggregator Gives you a Aggregator.
-func NewAggregator(URL string, FilePath string, languages []string, ignoreOS bool) (*Aggregator, error) {
+func NewAggregator(URL string, FilePath string, languages []string, ignoreOS bool, bulk bool) (*Aggregator, error) {
 	var a Aggregator
 	if URL == "" {
 		return nil, fmt.Errorf("no sample url passed")
@@ -72,6 +73,7 @@ func NewAggregator(URL string, FilePath string, languages []string, ignoreOS boo
 	}
 
 	a.ignoreOS = ignoreOS
+	a.Bulk = bulk
 
 	//Add Current file APP level
 	a.localPath = filepath.Join(FilePath, AggregatorLocalAPILevel)
@@ -129,12 +131,9 @@ func sampleWorker(a *Aggregator, jobs <-chan sampleWorkItem, results chan<- erro
 }
 
 func (a *Aggregator) workSample(w sampleWorkItem) error {
-	path := filepath.Join(a.localPath, w.language, w.s.Path, w.language+".tar.gz")
-	if !FileExists(path) {
-		url := a.baseURL.String() + "/" + w.s.Path + "/" + w.language + ".tar.gz"
-		if err := downloadFileDirect(path, url); err != nil {
-			return fmt.Errorf("failed to download sample '%s' - %v", w.s.Fields.Name, err)
-		}
+	_, err := GetTarBall(a.localPath, a.baseURL.String(), w.language, w.s.Path)
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -200,27 +199,30 @@ func (a *Aggregator) Update() error {
 	if err != nil {
 		return err
 	}
-	a.setupWorkers(5) //Start workerpool with 5
-
-	//Start Error collection go routine. Will just return a generic error to
-	//this function, will print real errors to fmt. for now
 
 	var outerrors error
 
 	var errWorker sync.WaitGroup
-	errWorker.Add(1)
-	go func() {
-		for e := range a.results {
-			if e != nil {
-				fmt.Println(e)
-				outerrors = fmt.Errorf("error occured on worker")
+	if a.Bulk {
+		//Setup threading pools for downloading all samples
+		a.setupWorkers(5) //Start workerpool with 5
+
+		//Start Error collection go routine. Will just return a generic error to
+		//this function, will print real errors to fmt. for now
+		errWorker.Add(1)
+		go func() {
+			for e := range a.results {
+				if e != nil {
+					fmt.Println(e)
+					outerrors = fmt.Errorf("error occured on worker")
+				}
 			}
-		}
-		if outerrors != nil {
-			a.lock() //Poison the cache
-		}
-		errWorker.Done()
-	}()
+			if outerrors != nil {
+				a.lock() //Poison the cache
+			}
+			errWorker.Done()
+		}()
+	}
 
 	for _, language := range a.languages {
 		localPath := filepath.Join(a.localPath, language+".json")
@@ -241,20 +243,23 @@ func (a *Aggregator) Update() error {
 			collected = filterOnOS(collected)
 		}
 
-		for _, sample := range collected {
-			a.sampleCount.Add(1)
-			a.jobs <- sampleWorkItem{language, sample, defaultRetry}
+		if a.Bulk {
+			for _, sample := range collected {
+				a.sampleCount.Add(1)
+				a.jobs <- sampleWorkItem{language, sample, defaultRetry}
+			}
 		}
-
 		a.Samples[language] = collected
 
 	}
 
-	a.sampleCount.Wait()
-	close(a.jobs)
-	a.wg.Wait()      //wait for job channel to be completed.
-	close(a.results) //tell error channel workers are done.
-	errWorker.Wait() //wait for the erros to be fully processed.
+	if a.Bulk {
+		a.sampleCount.Wait()
+		close(a.jobs)
+		a.wg.Wait()      //wait for job channel to be completed.
+		close(a.results) //tell error channel workers are done.
+		errWorker.Wait() //wait for the erros to be fully processed.
+	}
 
 	return outerrors
 
@@ -292,4 +297,21 @@ func (a *Aggregator) GetURL() string {
 //GetLanguages gets the base URL used for fetching
 func (a *Aggregator) GetLanguages() []string {
 	return a.languages
+}
+
+//GetTarBall Path of the tarball
+func GetTarBall(base string, baseURL string, language string, path string) (tar string, err error) {
+	tarPath := filepath.Join(base, AggregatorLocalAPILevel, language, path, language+".tar.gz")
+
+	if FileExists(tarPath) {
+		return tarPath, nil
+	}
+	//Download tarball
+
+	url := baseURL + "/" + path + "/" + language + ".tar.gz"
+	if err := downloadFileDirect(tarPath, url); err != nil {
+		return "", fmt.Errorf("failed to download sample '%s' - %v", path, err)
+	}
+
+	return tarPath, nil
 }

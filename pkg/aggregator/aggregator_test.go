@@ -57,19 +57,19 @@ func TestNewAggregator(t *testing.T) {
 	td := setupAggregatorTest(t)
 	defer td.cleanup()
 
-	_, err := NewAggregator("", "", []string{}, true)
+	_, err := NewAggregator("", "", []string{}, true, true)
 	if err == nil {
 		t.Errorf("this NewAggregator setup should have failed! With empty URL")
 	}
 	td.removeLock(t)
 
-	_, err = NewAggregator("1asd://sd", "", []string{}, true)
+	_, err = NewAggregator("1asd://sd", "", []string{}, true, true)
 	if err == nil {
 		t.Errorf("this NewAggregator setup should have failed! With malformed URL ")
 	}
 	td.removeLock(t)
 
-	_, err = NewAggregator("http://abcIShouldNotExist.intel.com/", "", []string{}, true)
+	_, err = NewAggregator("http://abcIShouldNotExist.intel.com/", "", []string{}, true, true)
 	if err == nil {
 		t.Errorf("this NewAggregator setup should have failed! With empty directory passed")
 	}
@@ -78,13 +78,13 @@ func TestNewAggregator(t *testing.T) {
 	// I wanted to test failing to create the local cache directory but I could think of a
 	// way todo it: a) crossplatform b) running as admin could be valid usecase
 
-	_, err = NewAggregator("http://abcIShouldNotExist.intel.com/", td.dir, []string{}, true)
+	_, err = NewAggregator("http://abcIShouldNotExist.intel.com/", td.dir, []string{}, true, true)
 	if err == nil {
 		t.Errorf("lenth or nil lanauges array should have failed")
 	}
 	td.removeLock(t)
 
-	_, err = NewAggregator("http://abcIShouldNotExist.intel.com/", td.dir, td.testLanguages, true)
+	_, err = NewAggregator("http://abcIShouldNotExist.intel.com/", td.dir, td.testLanguages, true, true)
 	if err == nil {
 		t.Errorf("should not be able to find cpp.json here, err should be network or http related")
 	}
@@ -97,7 +97,7 @@ func TestNewAggregator(t *testing.T) {
 
 	defer badTS.Close()
 
-	_, err = NewAggregator(badTS.URL, td.dir, td.testLanguages, true)
+	_, err = NewAggregator(badTS.URL, td.dir, td.testLanguages, true, true)
 	if err == nil {
 		t.Errorf("should have failed with 404 HTTP code")
 	}
@@ -109,13 +109,13 @@ func TestNewAggregator(t *testing.T) {
 	}))
 	defer badJSONTS.Close()
 
-	_, err = NewAggregator(badJSONTS.URL, td.dir, td.testLanguages, true)
+	_, err = NewAggregator(badJSONTS.URL, td.dir, td.testLanguages, true, true)
 	if err == nil {
 		t.Errorf("should have failed garbage JSON")
 	}
 	td.removeLock(t)
 
-	_, err = NewAggregator(td.ts.URL, td.dir, td.testLanguages, true)
+	_, err = NewAggregator(td.ts.URL, td.dir, td.testLanguages, true, true)
 	if err != nil {
 		t.Error(err)
 	}
@@ -127,7 +127,7 @@ func TestGetLocalPath(t *testing.T) {
 	td := setupAggregatorTest(t)
 	defer td.cleanup()
 
-	a, err := NewAggregator(td.ts.URL, td.dir, td.testLanguages, true)
+	a, err := NewAggregator(td.ts.URL, td.dir, td.testLanguages, true, true)
 	if err != nil {
 		t.Error(err)
 	}
@@ -144,7 +144,7 @@ func TestGetURL(t *testing.T) {
 	td := setupAggregatorTest(t)
 	defer td.cleanup()
 
-	a, err := NewAggregator(td.ts.URL, td.dir, td.testLanguages, true)
+	a, err := NewAggregator(td.ts.URL, td.dir, td.testLanguages, true, true)
 	if err != nil {
 		t.Error(err)
 	}
@@ -160,7 +160,7 @@ func TestGetLanguages(t *testing.T) {
 	td := setupAggregatorTest(t)
 	defer td.cleanup()
 
-	a, err := NewAggregator(td.ts.URL, td.dir, td.testLanguages, true)
+	a, err := NewAggregator(td.ts.URL, td.dir, td.testLanguages, true, true)
 	if err != nil {
 		t.Error(err)
 	}
@@ -179,7 +179,7 @@ func TestBadTLS(t *testing.T) {
 	}))
 	defer badTLS.Close()
 
-	_, err := NewAggregator(badTLS.URL, td.dir, td.testLanguages, true)
+	_, err := NewAggregator(badTLS.URL, td.dir, td.testLanguages, true, true)
 	if err == nil {
 		t.Errorf("should have failed due to invalid certificate")
 	}
@@ -199,7 +199,7 @@ func TestOSFiltering(t *testing.T) {
 	td.ts = ts
 	defer td.ts.Close()
 
-	filtered, err := NewAggregator(td.ts.URL, td.dir, td.testLanguages, false)
+	filtered, err := NewAggregator(td.ts.URL, td.dir, td.testLanguages, false, true)
 	if err != nil {
 		t.Errorf("failed to setup aggregator with good configs")
 	}
@@ -209,7 +209,7 @@ func TestOSFiltering(t *testing.T) {
 		t.Errorf("aggregator should have only seen two samples %v", len(filtered.Samples[td.testLanguages[0]]))
 	}
 
-	unFiltered, err := NewAggregator(td.ts.URL, td.dir, td.testLanguages, true)
+	unFiltered, err := NewAggregator(td.ts.URL, td.dir, td.testLanguages, true, true)
 	if err != nil {
 		t.Errorf("failed to setup aggregator with good configs")
 	}

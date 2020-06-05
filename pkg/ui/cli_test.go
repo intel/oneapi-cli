@@ -57,7 +57,7 @@ func setupAggregatorTest(t *testing.T) *testNewAggregatorData {
 
 	td.testLanguages = []string{"cpp", "python"}
 
-	td.aggregator, err = aggregator.NewAggregator(td.ts.URL, td.cache, td.testLanguages, true)
+	td.aggregator, err = aggregator.NewAggregator(td.ts.URL, td.cache, td.testLanguages, true, true)
 	if err != nil {
 		t.Error(err)
 	}
