@@ -147,7 +147,7 @@ func checkCompilerDeps(compilerDeps []string, root string) (msg string, errCode 
 	winCompilers := map[string]string{
 		"icc":     "windows/bin/intel64/icl.exe",
 		"fortran": "windows/bin/intel64/ifort.exe",
-		"dpcpp":   "windows/bin/dpcpp-cl.exe",
+		"dpcpp":   "windows/bin/dpcpp.exe",
 	}
 	linCompilers := map[string]string{
 		"icc":     "linux/bin/intel64/icc",
