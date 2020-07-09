@@ -301,7 +301,7 @@ func (a *Aggregator) GetLanguages() []string {
 
 //GetTarBall Path of the tarball
 func GetTarBall(base string, baseURL string, language string, path string) (tar string, err error) {
-	tarPath := filepath.Join(base, AggregatorLocalAPILevel, language, path, language+".tar.gz")
+	tarPath := filepath.Join(base, language, path, language+".tar.gz")
 
 	if FileExists(tarPath) {
 		return tarPath, nil
