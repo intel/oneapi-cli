@@ -39,10 +39,8 @@ type CLI struct {
 const idzURL = "https://software.intel.com/en-us/oneapi"
 
 func optionViewDocsInBrowser(url string) {
-	err := browser.OpenBrowser(url)
-	if err != nil {
-		log.Fatal(err)
-	}
+	//If it cant open it for some reason, it will silently fail
+	browser.OpenBrowser(url)
 }
 
 //NewCLI create a new *CLI element for showing the CLI
