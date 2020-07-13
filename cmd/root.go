@@ -60,7 +60,7 @@ func getAggregator() *aggregator.Aggregator {
 		if err != nil && err != aggregator.ErrCacheLock {
 			//Most errors we are going to find are network related :/
 			fmt.Printf("Failed to fetch sample index, this *may* be your network/proxy environment.\nYou might try setting http_proxy in your environment, for example:\n")
-			fmt.Printf("\tLinux: export http_proxy=http://your.proxy:8080\n")
+			fmt.Printf("\tLinux/Mac: export http_proxy=http://your.proxy:8080\n")
 			fmt.Printf("\tWindows: set http_proxy=http://your.proxy:8080\n")
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
