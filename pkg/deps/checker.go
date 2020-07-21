@@ -20,7 +20,7 @@ const (
 	baseURL = "https://software.intel.com/en-us/oneapi/"
 
 	formatStr = `The following tools are needed to build this sample but are not locally installed: (%s)
-You may continue and view the sample without the prerequisites. To install, visit:
+You may continue and view the sample without the prerequisites. To install the missing prerequisites, visit:
 %s%s
 `
 
@@ -270,25 +270,16 @@ func GenerateMessage(missing []string) string {
 		return fallbackMsg
 	}
 	//2.1 expand id-list to toolkits
-	toolkitCounter := make(map[string]int)
+
+	var matchedSuite []string
+
 	for _, suiteComp := range sweetComps {
 		if contains(idList, suiteComp.ComponentId) {
-			count := toolkitCounter[suiteComp.SuiteId]
-			toolkitCounter[suiteComp.SuiteId] = count + 1
+			matchedSuite = append(matchedSuite, suiteComp.SuiteId)
 		}
 	}
 
-	//3.0 find most frequent toolkit (if any)
-	var maxCount int
-	var maxSuite string
-	for suiteId, count := range toolkitCounter {
-		if count > maxCount {
-			maxCount = count
-			maxSuite = suiteId
-		}
-	}
-
-	if maxCount >= len(idList) {
+	if len(matchedSuite) > 1 {
 		//4.0 read suites.json
 		var suites []suite
 		//err = readSomeJSON(filepath.Join("json", "suites.json"), &suites)
@@ -297,9 +288,18 @@ func GenerateMessage(missing []string) string {
 			return fallbackMsg
 		}
 
-		//4.1 get slug from toolkit
-		slug = findSlug(suites, maxSuite)
-		return fmt.Sprintf(formatStr, strings.Join(missing, " "), baseURL, slug)
+		var composed string
+
+		for _, suite := range matchedSuite {
+			slug := findSlug(suites, suite)
+
+			if len(composed) == 0 {
+				composed = fmt.Sprintf(formatStr, strings.Join(missing, " "), baseURL, slug)
+			} else {
+				composed = fmt.Sprintf("%sor %s%s", composed, baseURL, slug)
+			}
+		}
+		return composed
 	}
 
 	return fallbackMsg
