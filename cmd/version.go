@@ -14,10 +14,9 @@ var version string
 
 // cleanCmd represents the clean command
 var versionCmd = &cobra.Command{
-	Use:    "version",
-	Short:  "Show the CLI version information",
-	Long:   `Show the CLI version information`,
-	Hidden: true,
+	Use:   "version",
+	Short: "Show the CLI version information",
+	Long:  `Show the CLI version information`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if version == "" {
 			version = "devel"

@@ -21,9 +21,8 @@ var outputJSON bool
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
-	Use:    "list",
-	Short:  "List Samples",
-	Hidden: true,
+	Use:   "list",
+	Short: "List Samples",
 	Long: `Lists the available samples. Checks online if newer sample index
 	is available`,
 	Run: func(cmd *cobra.Command, args []string) {
