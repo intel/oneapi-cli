@@ -35,9 +35,24 @@ var listCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if getAggregator().Samples[language] == nil {
+		//Check language is part of the support ones from the aggregator module
+		var found bool
+		for _, l := range getAggregator().GetLanguages() {
+			if l == language {
+				found = true
+				break
+			}
+		}
+		if !found {
 			fmt.Printf("Invalid language provided, available languages: %v\n", getAggregator().GetLanguages())
 			os.Exit(1)
+		}
+
+		if getAggregator().Samples[language] == nil {
+			if outputJSON {
+				fmt.Printf("[]")
+			}
+			return
 		}
 
 		if outputJSON {
