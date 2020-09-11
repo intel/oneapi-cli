@@ -143,17 +143,31 @@ func checkCompilerDeps(compilerDeps []string, root string) (msg string, errCode 
 	msg = ""
 	errCode = 0
 	var missing []string
-	isWindows := (runtime.GOOS == "windows")
+
 	winCompilers := map[string]string{
 		"icc":     "windows/bin/intel64/icl.exe",
 		"fortran": "windows/bin/intel64/ifort.exe",
 		"dpcpp":   "windows/bin/dpcpp.exe",
+		"icpc":    "windows/bin/intel64/icpc.exe",
+		"icx":     "windows/bin/icx.exe",
+		"icpcx":   "windows/bin/icpcx.exe",
 	}
 	linCompilers := map[string]string{
 		"icc":     "linux/bin/intel64/icc",
 		"fortran": "linux/bin/intel64/ifort",
 		"dpcpp":   "linux/bin/dpcpp",
+		"icpc":    "linux/bin/intel64/icpc",
+		"icx":     "linux/bin/icx",
+		"icpcx":   "linux/bin/icpcx",
 	}
+	macCompilers := map[string]string{
+		"icpc":  "mac/bin/intel64/icpc",
+		"icc":   "mac/bin/intel64/icc",
+		"ifort": "mac/bin/intel64/ifort",
+		"icx":   "mac/bin/icx",
+		"icpcx": "mac/bin/icpcx",
+	}
+
 	compilerRoot := GetCompilerRoot(root)
 
 	//0. setup regex that will parse dependency
@@ -162,11 +176,18 @@ func checkCompilerDeps(compilerDeps []string, root string) (msg string, errCode 
 	for _, dep := range compilerDeps {
 		compiler, _ := parseDep(regEx, dep)
 		var pathTail string
-		if isWindows {
-			//1.W
-			pathTail = winCompilers[compiler] //could be ""
-		} else {
+
+		switch runtime.GOOS {
+		case "linux":
 			pathTail = linCompilers[compiler]
+		case "windows":
+			pathTail = winCompilers[compiler]
+		case "darwin":
+			pathTail = macCompilers[compiler]
+		default:
+			msg = "Cannot check Compiler, unsupported OS"
+			errCode = 01
+			return msg, errCode
 		}
 
 		fullPath := filepath.Join(compilerRoot, pathTail)
