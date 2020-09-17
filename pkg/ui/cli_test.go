@@ -146,12 +146,14 @@ func TestFullFlow(t *testing.T) {
 	}
 	defer os.RemoveAll(ws)
 
+	//Remove default input with CTRL+U
+	s.InjectKey(tcell.KeyCtrlU, 'd', tcell.ModNone)
+
 	for i := 0; i < len(ws); i++ {
 		s.InjectKey(tcell.KeyRune, rune(ws[i]), tcell.ModNone)
 		time.Sleep(10 * time.Millisecond) //Need to give time to the key presses :/
 	}
 
-	s.InjectKey(tcell.KeyTAB, 'd', tcell.ModNone)   //Tab
 	s.InjectKey(tcell.KeyTAB, 'd', tcell.ModNone)   //Tab
 	s.InjectKey(tcell.KeyEnter, 'd', tcell.ModNone) //Create
 	s.InjectKey(tcell.KeyEnter, 'd', tcell.ModNone) //Dismiss success dialog
@@ -160,7 +162,7 @@ func TestFullFlow(t *testing.T) {
 
 	//Test for known file in "sample"
 
-	knownZebra := filepath.Join(ws, "zoo", "this-is-a-zebra.md")
+	knownZebra := filepath.Join(ws, "this-is-a-zebra.md")
 
 	if !fileExists(t, knownZebra) {
 		t.Errorf("sample creation flow failed! could not find %s", knownZebra)

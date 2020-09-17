@@ -272,7 +272,7 @@ func (cli *CLI) tree(language string) cview.Primitive {
 		if !ok {
 			return
 		}
-		cli.askPath(a, language, "", "")
+		cli.askPath(a, language, "")
 	})
 	tree.Box.SetBorder(true).SetTitle("Samples")
 	tree.SetTopLevel(1)
@@ -291,15 +291,6 @@ func (cli *CLI) tree(language string) cview.Primitive {
 	return tree
 }
 
-func (cli *CLI) updateDestinationDisplay(path string, box *cview.TextView) {
-
-	output := "[yellow]Destination:[-] " + path
-	if !isPathEmpty(path) {
-		output = "[red]Warning! [-]" + output + " [red]Is not empty![-]"
-	}
-	box.SetText(output)
-}
-
 func isPathEmpty(path string) bool {
 	if !aggregator.FileExists(path) {
 		return true
@@ -311,40 +302,30 @@ func isPathEmpty(path string) bool {
 	return (len(files) == 0)
 }
 
-func (cli *CLI) askPath(sample aggregator.Sample, language string, base string, dir string) {
-
-	if dir == "" {
-		dir = filepath.Base(sample.Path)
+func (cli *CLI) askPath(sample aggregator.Sample, language string, path string) {
+	if path == "" {
+		pwd, err := os.Getwd()
+		if err != nil {
+			log.Println(err)
+		}
+		path = filepath.Join(pwd, filepath.Base(sample.Path))
 	}
+
 	text := cview.NewTextView().SetWordWrap(true).
 		SetChangedFunc(func() {
 			cli.app.Draw()
 		}).SetDynamicColors(true)
 	form := cview.NewForm().
-		AddInputField("Directory", base, 20, nil, func(t string) {
-			base = t
-			path, err := cli.calcPath(base, dir, sample)
-			if err != nil {
-				return
-			}
-			cli.updateDestinationDisplay(path, text)
-		}).
-		AddInputField("Project Name", dir, 20, nil, func(t string) {
-			dir = t
-			path, err := cli.calcPath(base, dir, sample)
-			if err != nil {
-				return
-			}
-			cli.updateDestinationDisplay(path, text)
-
+		AddInputField("Directory", path, 55, nil, func(t string) {
+			path = t
 		}).
 		AddButton("Create", func() {
-			path, err := cli.calcPath(base, dir, sample)
+			path, err := cli.calcPath(path)
 			if err != nil {
 				return
 			}
 			if !isPathEmpty(path) {
-				cli.confirmOverwrite(sample, language, path, base, dir)
+				cli.confirmOverwrite(sample, language, path)
 				return
 			}
 			outPath, err := cli.createProject(sample, language, path)
@@ -360,32 +341,26 @@ func (cli *CLI) askPath(sample aggregator.Sample, language string, base string, 
 	})
 
 	text.SetBorderPadding(0, 0, 1, 1)
-	path, err := cli.calcPath(base, dir, sample)
-	if err != nil {
-		return
-	}
-	cli.updateDestinationDisplay(path, text)
 
 	flex := cview.NewFlex().SetDirection(cview.FlexRow).
-		AddItem(form, 7, 0, true).
-		AddItem(text, 1, 0, false)
+		AddItem(form, 7, 0, true)
 
 	flex.SetBorder(true).SetTitle("Create Project").SetTitleAlign(cview.AlignLeft)
 
 	cli.app.SetRoot(flex, true)
 }
 
-func (cli *CLI) confirmOverwrite(sample aggregator.Sample, language string, path string, base string, dir string) {
+func (cli *CLI) confirmOverwrite(sample aggregator.Sample, language string, path string) {
 
 	text := fmt.Sprintf("Path %s is not empty, Creating the sample may overwrite some files.", path)
-	buttons := []string{"Cancel", "Confirm"}
+	buttons := []string{"Back", "Confirm"}
 
 	modal := cview.NewModal().
 		SetText(text).
 		AddButtons(buttons).
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 
-			if buttonLabel != "Cancel" {
+			if buttonLabel != "Back" {
 				outPath, err := cli.createProject(sample, language, path)
 
 				if err != nil {
@@ -395,7 +370,7 @@ func (cli *CLI) confirmOverwrite(sample aggregator.Sample, language string, path
 				cli.successModal(outPath)
 				return
 			}
-			cli.askPath(sample, language, base, dir)
+			cli.askPath(sample, language, path)
 		})
 	cli.app.SetRoot(modal, true)
 
@@ -444,7 +419,7 @@ func (cli *CLI) successModal(path string) {
 	cli.app.SetRoot(modal, true)
 }
 
-func (cli *CLI) calcPath(projectPath string, prjName string, sample aggregator.Sample) (string, error) {
+func (cli *CLI) calcPath(projectPath string) (string, error) {
 	//Expand env vars the user might have passed through.
 	projectPath = os.ExpandEnv(projectPath)
 	//Check if tilda ~ is being used, then use the home dir
@@ -453,23 +428,10 @@ func (cli *CLI) calcPath(projectPath string, prjName string, sample aggregator.S
 		projectPath = filepath.Join(cli.userHome, projectPath[1:]) //Prepend home path and trim tilda
 	}
 
-	if projectPath == "" {
-		dir, err := os.Getwd()
-		if err != nil {
-			return "", err
-		}
-		projectPath = dir
-	}
 	projectPath, err := filepath.Abs(projectPath)
 	if err != nil {
 		return "", err
 	}
-
-	if prjName == "" {
-		prjName = filepath.Base(sample.Path)
-	}
-
-	projectPath = filepath.Join(projectPath, prjName)
 	return projectPath, nil
 }
 
