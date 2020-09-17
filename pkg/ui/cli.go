@@ -187,7 +187,7 @@ func categoriesSeach(parent *cview.TreeNode, cats []string, s aggregator.Sample)
 		}
 	}
 	if len(cats) > 0 {
-		csearch := cview.NewTreeNode(cats[0]).SetColor(tcell.ColorBlue)
+		csearch := cview.NewTreeNode(cats[0]).SetColor(tcell.ColorOrange)
 		parent.AddChild(csearch)
 		categoriesSeach(csearch, cats[1:], s)
 		return
@@ -209,7 +209,7 @@ func (s byNodeText) Less(i, j int) bool {
 func (cli *CLI) tree(language string) cview.Primitive {
 
 	root := cview.NewTreeNode("Samples").
-		SetColor(tcell.ColorBlue)
+		SetColor(tcell.ColorOrange)
 	tree := cview.NewTreeView().
 		SetRoot(root).
 		SetCurrentNode(root)
@@ -231,7 +231,7 @@ func (cli *CLI) tree(language string) cview.Primitive {
 	}
 
 	if len(missingCat) > 0 {
-		other := cview.NewTreeNode("Other").SetColor(tcell.ColorBlue)
+		other := cview.NewTreeNode("Other").SetColor(tcell.ColorOrange)
 		root.AddChild(other)
 		for _, missingNode := range missingCat {
 			other.AddChild(missingNode)
