@@ -156,7 +156,7 @@ func (a *Aggregator) syncLanguagesIndex() error {
 		update := false
 		a.Online = true
 
-		remoteHash, remote, indexErr := sha256URL(a.baseURL.String() + "/" + language + ".json")
+		remoteHash, remote, indexErr := sha512URL(a.baseURL.String() + "/" + language + ".json")
 		if indexErr != nil {
 			log.Print("failed to connect to sample aggregator, attempting to use local cache\n")
 			a.Online = false

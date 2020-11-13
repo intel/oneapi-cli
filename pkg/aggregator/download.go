@@ -4,7 +4,7 @@
 package aggregator
 
 import (
-	"crypto/sha256"
+	"crypto/sha512"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -56,7 +56,7 @@ func downloadFileDirect(path string, url string) error {
 	return err
 }
 
-func sha256URL(url string) ([]byte, []byte, error) {
+func sha512URL(url string) ([]byte, []byte, error) {
 
 	c := &http.Client{
 		Timeout: HTTPTimeout * time.Second,
@@ -71,7 +71,7 @@ func sha256URL(url string) ([]byte, []byte, error) {
 		return nil, nil, fmt.Errorf("HTTP-%v on %s", resp.StatusCode, url)
 	}
 	// Write the body to file
-	hasher := sha256.New()
+	hasher := sha512.New()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

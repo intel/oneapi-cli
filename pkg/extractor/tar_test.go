@@ -3,7 +3,7 @@
 package extractor
 
 import (
-	"crypto/sha256"
+	"crypto/sha512"
 	"encoding/hex"
 	"io/ioutil"
 	"os"
@@ -15,8 +15,8 @@ import (
 const testalpha = "testalpha.txt"
 const testbeta = "testbeta.txt"
 const testdir = "dirtest"
-const testalphaSum = "178f2ea6fbb119e0623edba9baf9a8e3e2607c6791622ad0ab149bfe9573479a"
-const testbetaSum = "c1e75e9b1a795c7c4da7180c6a812779e2e6957e47581719b697b880aae07251"
+const testalphaSum = "10b8eefa145e6f3ff612197247765c0fa15788874b2f483879c8528383489d97f4ac18daed45334341d55342c94602976b401c88e879a9d8fd950c69040e29e2"
+const testbetaSum = "e73842277cc6739947522cc2cac9dc150524d2d6683fe54b79da6a098a2cffc8a9498583c2f17d7897db36fa1980d6d0e729f4989780e0be38ef3684210c5d99"
 
 func setupGoldTemp(t *testing.T) string {
 	t.Helper()
@@ -35,7 +35,7 @@ func cleanupTemp(t *testing.T, path string) {
 //localhash returns hash,  error
 func localHash(t *testing.T, path string) string {
 	t.Helper()
-	hasher := sha256.New()
+	hasher := sha512.New()
 	local, err := ioutil.ReadFile(path)
 	if err != nil {
 		t.Error(err)
@@ -65,7 +65,7 @@ func TestExtractTarGz(t *testing.T) {
 	//test the output of alpha was good
 	extractedAlphaSum := localHash(t, filepath.Join(output, testalpha))
 	if extractedAlphaSum != testalphaSum {
-		t.Errorf("outputted alpha file does not match expected output sha256 "+
+		t.Errorf("outputted alpha file does not match expected output sha512 "+
 			"golden: %s and we just read: %s", testalphaSum, extractedAlphaSum)
 	}
 
@@ -73,7 +73,7 @@ func TestExtractTarGz(t *testing.T) {
 	//test the output of beta was good, this also tests the directory was made!
 	extractedBetaSum := localHash(t, betaCombinedPath)
 	if extractedBetaSum != testbetaSum {
-		t.Errorf("outputted beta file does not match expected output sha256 "+
+		t.Errorf("outputted beta file does not match expected output sha512 "+
 			"golden: %s and we just read: %s", testbetaSum, extractedBetaSum)
 	}
 

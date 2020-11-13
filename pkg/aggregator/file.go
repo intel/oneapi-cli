@@ -4,7 +4,7 @@
 package aggregator
 
 import (
-	"crypto/sha256"
+	"crypto/sha512"
 	"io/ioutil"
 	"os"
 )
@@ -19,7 +19,7 @@ func FileExists(path string) bool {
 
 //localhash returns hash,  error
 func localHash(path string) ([]byte, error) {
-	hasher := sha256.New()
+	hasher := sha512.New()
 	local, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
