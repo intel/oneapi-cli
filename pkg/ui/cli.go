@@ -311,10 +311,6 @@ func (cli *CLI) askPath(sample aggregator.Sample, language string, path string) 
 		path = filepath.Join(pwd, filepath.Base(sample.Path))
 	}
 
-	text := cview.NewTextView().SetWordWrap(true).
-		SetChangedFunc(func() {
-			cli.app.Draw()
-		}).SetDynamicColors(true)
 	form := cview.NewForm().
 		AddInputField("Destination", path, 55, nil, func(t string) {
 			path = t
@@ -340,14 +336,10 @@ func (cli *CLI) askPath(sample aggregator.Sample, language string, path string) 
 		cli.selectProject(language)
 	})
 
-	text.SetBorderPadding(0, 0, 1, 1)
+	form.SetBorder(true).SetTitle("Create Project").SetTitleAlign(cview.AlignLeft)
+	form.SetWrapAround(true)
 
-	flex := cview.NewFlex().SetDirection(cview.FlexRow).
-		AddItem(form, 7, 0, true)
-
-	flex.SetBorder(true).SetTitle("Create Project").SetTitleAlign(cview.AlignLeft)
-
-	cli.app.SetRoot(flex, true)
+	cli.app.SetRoot(form, true)
 }
 
 func (cli *CLI) confirmOverwrite(sample aggregator.Sample, language string, path string) {
