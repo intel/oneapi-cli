@@ -11,7 +11,7 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-			VALUE "LegalCopyright", "(C) Intel Corporation 2020. Available under BSD-3-Clause"
+			VALUE "LegalCopyright", "(C) Intel Corporation. Available under BSD-3-Clause"
             VALUE "OriginalFilename", "oneapi-cli.exe"
         END
     END
