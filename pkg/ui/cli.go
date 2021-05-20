@@ -122,6 +122,9 @@ func (cli *CLI) selectLang() {
 	start = '1'
 
 	for _, k := range cli.aggregator.GetLanguages() {
+		if len(cli.aggregator.Samples[k]) == 0 {
+			continue
+		}
 		list.AddItem(k, "", start, func() {
 			i := list.GetCurrentItem() //List doesnt support a reference
 			cli.selectProject(cli.aggregator.GetLanguages()[i])
