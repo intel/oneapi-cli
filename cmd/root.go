@@ -29,7 +29,7 @@ const LocalStorageDefault = ".oneapi-cli"
 var baseURL string
 var baseFilePath string
 var cAggregator *aggregator.Aggregator
-var defaultLanguages = []string{"cpp", "python"}
+var defaultLanguages = []string{"cpp", "python", "fortran"}
 var enabledLanguages []string
 var userHome string
 var ignoreOS bool
