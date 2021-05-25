@@ -151,6 +151,7 @@ func checkCompilerDeps(compilerDeps []string, root string) (msg string, errCode 
 		"icpc":    "windows/bin/intel64/icpc.exe",
 		"icx":     "windows/bin/icx.exe",
 		"icpcx":   "windows/bin/icpcx.exe",
+		"ifx":     "windows/bin/ifx.exe",
 	}
 	linCompilers := map[string]string{
 		"icc":     "linux/bin/intel64/icc",
@@ -159,6 +160,7 @@ func checkCompilerDeps(compilerDeps []string, root string) (msg string, errCode 
 		"icpc":    "linux/bin/intel64/icpc",
 		"icx":     "linux/bin/icx",
 		"icpcx":   "linux/bin/icpcx",
+		"ifx":     "linux/bin/ifx",
 	}
 	macCompilers := map[string]string{
 		"icpc":  "mac/bin/intel64/icpc",
@@ -166,6 +168,7 @@ func checkCompilerDeps(compilerDeps []string, root string) (msg string, errCode 
 		"ifort": "mac/bin/intel64/ifort",
 		"icx":   "mac/bin/icx",
 		"icpcx": "mac/bin/icpcx",
+		"ifx":   "mac/bin/ifx",
 	}
 
 	compilerRoot := GetCompilerRoot(root)
