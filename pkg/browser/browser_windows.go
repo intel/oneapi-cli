@@ -4,7 +4,7 @@
 package browser
 
 import (
-	"os/exec"
+	exec "golang.org/x/sys/execabs"
 	"strings"
 	"syscall"
 )
