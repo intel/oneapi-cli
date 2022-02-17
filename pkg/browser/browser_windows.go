@@ -5,6 +5,8 @@ package browser
 
 import (
 	exec "golang.org/x/sys/execabs"
+	"os"
+	"path/filepath"
 	"strings"
 	"syscall"
 )
@@ -12,7 +14,9 @@ import (
 //OpenBrowser opens the url passed
 func OpenBrowser(url string) error {
 	r := strings.NewReplacer("&", "^&")
-	cmd := exec.Command("cmd", "/c", "start", r.Replace(url))
+	rundll32 := filepath.Join(os.Getenv("SystemRoot"), "System32", "rundll32.exe")
+
+	cmd := exec.Command(rundll32, "url.dll,FileProtocolHandler", r.Replace(url))
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 	return cmd.Run()
 
