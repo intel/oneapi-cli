@@ -151,6 +151,7 @@ func (a *Aggregator) setupWorkers(n int) {
 //syncLanguages interates over configured lanauges, and if a newer version is available online
 
 func (a *Aggregator) syncLanguagesIndex() error {
+	var workingLanguages []string
 	for _, language := range a.languages {
 		localPath := filepath.Join(a.localPath, language+".json")
 		update := false
@@ -158,7 +159,7 @@ func (a *Aggregator) syncLanguagesIndex() error {
 
 		remoteHash, remote, indexErr := sha512URL(a.baseURL.String() + "/" + language + ".json")
 		if indexErr != nil {
-			log.Print("failed to connect to sample aggregator, attempting to use local cache\n")
+			log.Printf("failed to connect to sample aggregator for %s samples, attempting to use local cache\n", language)
 			a.Online = false
 		}
 		if FileExists(localPath) {
@@ -172,8 +173,8 @@ func (a *Aggregator) syncLanguagesIndex() error {
 			}
 		} else {
 			if !a.Online {
-				log.Println("operating offline and local cache does not exist")
-				return indexErr
+				log.Printf("operating offline and local cache for %s samples does not exist\n\t%s\n", language, indexErr)
+				continue
 			}
 			update = true
 		}
@@ -188,7 +189,14 @@ func (a *Aggregator) syncLanguagesIndex() error {
 		if err := os.MkdirAll(filepath.Join(a.localPath, language), 0750); err != nil {
 			return err
 		}
+		workingLanguages = append(workingLanguages, language)
 	}
+
+	if len(workingLanguages) < 1 {
+		return fmt.Errorf("no working sample languages configured %v", a.languages)
+	}
+	//Overwrite with known working languages.
+	a.languages = workingLanguages
 
 	return nil
 }
