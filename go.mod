@@ -1,13 +1,13 @@
 module github.com/intel/oneapi-cli
 
-go 1.19
+go 1.20
 
 require (
 	github.com/gdamore/tcell v1.4.0
 	github.com/mattn/go-ieproxy v0.0.1
-	github.com/spf13/cobra v1.6.0
+	github.com/spf13/cobra v1.6.1
 	gitlab.com/tslocum/cview v1.4.4
-	golang.org/x/sys v0.0.0-20221013171732-95e765b1cc43
+	golang.org/x/sys v0.5.0
 )
 
 require (
@@ -17,6 +17,6 @@ require (
 	github.com/mattn/go-runewidth v0.0.8 // indirect
 	github.com/rivo/uniseg v0.4.2 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	golang.org/x/net v0.0.0-20221014081412-f15817d10f9b // indirect
-	golang.org/x/text v0.3.8 // indirect
+	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/text v0.7.0 // indirect
 )

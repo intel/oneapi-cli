@@ -39,6 +39,7 @@ var checkCmd = &cobra.Command{
 				fmt.Println(err) //Failed to find the Env, may be unset.
 				os.Exit(-1)
 			}
+
 		}
 
 		//Check the deps at the found root.
@@ -47,6 +48,7 @@ var checkCmd = &cobra.Command{
 			fmt.Println(msg)
 			os.Exit(errCode)
 		}
+
 	},
 }
 

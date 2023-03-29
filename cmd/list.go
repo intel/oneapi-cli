@@ -62,7 +62,6 @@ var listCmd = &cobra.Command{
 		for _, s := range getAggregator().Samples[language] {
 			fmt.Printf("%s:\n\t%s\n", s.Fields.Name, s.Fields.Description)
 		}
-
 	},
 }
 

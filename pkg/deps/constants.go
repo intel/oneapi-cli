@@ -54,7 +54,7 @@ const compmappingJSON = `
 ]
 `
 
-// if copy/pasting JSON from the WebConfigurator team, I recommend linting it first.
+//if copy/pasting JSON from the WebConfigurator team, I recommend linting it first.
 // https://jsonlint.com/
 // they have lots of small problems (missing quotes, stray commas, missing commas) that
 // Node.js forgives.
