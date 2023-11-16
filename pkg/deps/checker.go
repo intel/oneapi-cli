@@ -17,7 +17,7 @@ import (
 const (
 	rootEnvKey = "ONEAPI_ROOT"
 
-	baseURL = "https://software.intel.com/en-us/oneapi/"
+	baseURL = "https://www.intel.com/content/www/us/en/developer/tools/oneapi/overview"
 
 	formatStr = `The following tools are needed to build this sample but are not locally installed: (%s)
 You may continue and view the sample without the prerequisites. To install the missing prerequisites, visit:
@@ -28,11 +28,10 @@ You may continue and view the sample without the prerequisites. To install the m
 	compilerReg = "compiler\\|(.*)"
 )
 
-//CheckDeps as
+// CheckDeps as
 func CheckDeps(dependencies []string, root string) (msg string, errCode int) {
 	//dependencies are both "normal" component dependencies ( ["mkl", "vtune"])
 	//and "special" dependencies  ( ["pkg|mraa", "compiler|icc"])
-
 	componentDeps, specialDeps := separatethSheepsGoats(dependencies)
 
 	componentMsg, componentErrCode := checkComponentDeps(componentDeps, root)
@@ -145,30 +144,30 @@ func checkCompilerDeps(compilerDeps []string, root string) (msg string, errCode 
 	var missing []string
 
 	winCompilers := map[string]string{
-		"icc":     "windows/bin/intel64/icl.exe",
-		"fortran": "windows/bin/intel64/ifort.exe",
-		"dpcpp":   "windows/bin/dpcpp.exe",
-		"icpc":    "windows/bin/intel64/icpc.exe",
-		"icx":     "windows/bin/icx.exe",
-		"icpcx":   "windows/bin/icpcx.exe",
-		"ifx":     "windows/bin/ifx.exe",
+		"icc":     "bin/intel64/icl.exe",
+		"fortran": "bin/intel64/ifort.exe",
+		"dpcpp":   "bin/dpcpp.exe",
+		"icpc":    "bin/intel64/icpc.exe",
+		"icx":     "bin/icx.exe",
+		"icpcx":   "bin/icpcx.exe",
+		"ifx":     "bin/ifx.exe",
 	}
 	linCompilers := map[string]string{
-		"icc":     "linux/bin/intel64/icc",
-		"fortran": "linux/bin/intel64/ifort",
-		"dpcpp":   "linux/bin/dpcpp",
-		"icpc":    "linux/bin/intel64/icpc",
-		"icx":     "linux/bin/icx",
-		"icpcx":   "linux/bin/icpcx",
-		"ifx":     "linux/bin/ifx",
+		"icc":     "bin/intel64/icc",
+		"fortran": "bin/intel64/ifort",
+		"dpcpp":   "bin/dpcpp",
+		"icpc":    "bin/intel64/icpc",
+		"icx":     "bin/icx",
+		"icpcx":   "bin/icpcx",
+		"ifx":     "bin/ifx",
 	}
 	macCompilers := map[string]string{
-		"icpc":  "mac/bin/intel64/icpc",
-		"icc":   "mac/bin/intel64/icc",
-		"ifort": "mac/bin/intel64/ifort",
-		"icx":   "mac/bin/icx",
-		"icpcx": "mac/bin/icpcx",
-		"ifx":   "mac/bin/ifx",
+		"icpc":  "bin/intel64/icpc",
+		"icc":   "bin/intel64/icc",
+		"ifort": "bin/intel64/ifort",
+		"icx":   "bin/icx",
+		"icpcx": "bin/icpcx",
+		"ifx":   "bin/ifx",
 	}
 
 	compilerRoot := GetCompilerRoot(root)
@@ -220,19 +219,28 @@ func checkSpecialDeps(specialDependencies []string, root string) (msg string, er
 	return msg, errCode
 }
 
-//GetOneAPIRoot gets the root the OneAPI installation
-//based on the ONEAPI_ROOT
+// GetOneAPIRoot gets the root the OneAPI installation
+// based on the ONEAPI_ROOT
 func GetOneAPIRoot() (path string, err error) {
 	root, ok := os.LookupEnv(rootEnvKey)
+
 	if !ok {
 		return "", fmt.Errorf("%s not defined.  Be sure to run oneapi environment script ( source setvars.sh )", rootEnvKey)
 	}
+
+	tmp := filepath.Dir(root)
+	tmp = strings.ToLower(filepath.Base(tmp))
+	if tmp == "oneapi" {
+		return filepath.Dir(root), nil
+	}
+
 	return root, nil
 }
 
 // CMPLR_ROOT was, for awhile, always defined in the environment. But no longer.
 func GetCompilerRoot(root string) (compilerRoot string) {
-	return filepath.Join(root, "compiler", "latest")
+	compilerRoot = filepath.Join(root, "compiler", "latest")
+	return compilerRoot
 }
 
 type suiteComponent struct {
@@ -265,7 +273,7 @@ func GenerateMessage(missing []string) string {
 
 	//5. return message with url.
 
-	//baseURL := "https://software.intel.com/en-us/oneapi"   // this is captured in format String
+	//baseURL := "https://www.intel.com/content/www/us/en/developer/tools/oneapi/overview"   // this is captured in format String
 	var slug string
 	fallbackMsg := fmt.Sprintf(formatStr, strings.Join(missing, " "), baseURL, slug)
 
@@ -342,7 +350,7 @@ func readSomeJSON(path string, something interface{}) error {
 	return nil
 }
 
-//keeping the same interface as the file reading function for now.
+// keeping the same interface as the file reading function for now.
 func parseSomeJSON(str string, something interface{}) error {
 	json.Unmarshal([]byte(str), something)
 	return nil

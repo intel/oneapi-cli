@@ -4,6 +4,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -18,6 +19,11 @@ var cleanCmd = &cobra.Command{
 	Long:  `Removes local Sample Cache`,
 	Run: func(cmd *cobra.Command, args []string) {
 		os.RemoveAll(filepath.Join(baseFilePath, aggregator.AggregatorLocalAPILevel))
+		if err := os.RemoveAll(filepath.Join(baseFilePath, aggregator.AggregatorLocalAPILevel)); err != nil {
+			fmt.Println("Failed to clean sample cache.")
+			fmt.Printf("%s \n", err)
+			os.Exit(1)
+		}
 	},
 }
 

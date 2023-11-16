@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//Version set during build via `go build -ldflags -X "-X main.Version=version"`
+// Version set during build via `go build -ldflags -X "-X main.Version=version"`
 var version string
 
-// cleanCmd represents the clean command
+// versionCmd represents the version command
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Show the CLI version information",

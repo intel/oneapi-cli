@@ -7,6 +7,7 @@ require (
 	github.com/mattn/go-ieproxy v0.0.1
 	github.com/spf13/cobra v1.6.1
 	gitlab.com/tslocum/cview v1.4.4
+	//	golang.org/x/sys v0.0.0-20221013171732-95e765b1cc43
 	golang.org/x/sys v0.13.0
 )
 

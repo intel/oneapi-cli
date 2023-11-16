@@ -25,7 +25,7 @@ const depsMissingEnvFmt = `The sample you have chosen requires the following dep
 Unfortunately, we are unable to determine if they are present.
 Did you use setvars to configure your environment? Are you using a container build environment?`
 
-//CLI data
+// CLI data
 type CLI struct {
 	sidebar    *cview.TextView
 	app        *cview.Application
@@ -36,14 +36,14 @@ type CLI struct {
 	langSelect *cview.List
 }
 
-const idzURL = "https://software.intel.com/en-us/oneapi"
+const idzURL = "https://www.intel.com/content/www/us/en/developer/tools/oneapi/overview"
 
 func optionViewDocsInBrowser(url string) {
 	//If it cant open it for some reason, it will silently fail
 	browser.OpenBrowser(url)
 }
 
-//NewCLI create a new *CLI element for showing the CLI
+// NewCLI create a new *CLI element for showing the CLI
 func NewCLI(a *aggregator.Aggregator, uH string) (cli *CLI, err error) {
 	if a == nil {
 		return nil, fmt.Errorf("Aggregator passed not valid")
@@ -64,7 +64,7 @@ func NewCLI(a *aggregator.Aggregator, uH string) (cli *CLI, err error) {
 	return &CLI{app: cview.NewApplication(), aggregator: a, userHome: uH, oneAPIRoot: oneRootPath}, nil
 }
 
-//Show displays the UI
+// Show displays the UI
 func (cli *CLI) Show() {
 
 	list := cview.NewList().
@@ -172,7 +172,7 @@ func newSampleNode(s aggregator.Sample) *cview.TreeNode {
 	return node
 }
 
-//This take a sample and a category to add it to. TODO revist this
+// This take a sample and a category to add it to. TODO revist this
 func categoriesSeach(parent *cview.TreeNode, cats []string, s aggregator.Sample) {
 	if len(cats) == 0 {
 		parent.AddChild(newSampleNode(s))
