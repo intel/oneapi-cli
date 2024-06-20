@@ -346,13 +346,19 @@ func readSomeJSON(path string, something interface{}) error {
 	if err != nil {
 		return err
 	}
-	json.Unmarshal(byteValue, something)
+	err = json.Unmarshal(byteValue, something)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // keeping the same interface as the file reading function for now.
 func parseSomeJSON(str string, something interface{}) error {
-	json.Unmarshal([]byte(str), something)
+	err := json.Unmarshal([]byte(str), something)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

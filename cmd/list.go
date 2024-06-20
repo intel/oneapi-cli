@@ -12,7 +12,12 @@ import (
 )
 
 func prettyPrint(i interface{}) string {
-	s, _ := json.MarshalIndent(i, "", "\t")
+	s, err := json.MarshalIndent(i, "", "\t")
+	if err != nil {
+		fmt.Println("Failed to pretty print Json")
+		fmt.Printf("%s \n", err)
+		os.Exit(1)
+	}
 	return string(s)
 }
 
