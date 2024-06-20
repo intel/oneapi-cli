@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 )
 
-//ExtractTarGz extracts a tar.gz to the destination
+// ExtractTarGz extracts a tar.gz to the destination
 func ExtractTarGz(sourcetb string, out string) error {
 
 	//Ensure Output exists
@@ -73,7 +73,10 @@ func ExtractTarGz(sourcetb string, out string) error {
 				return err
 			}
 
-			f.Close()
+			err = f.Close()
+			if err != nil {
+				return err
+			}
 		}
 	}
 }
