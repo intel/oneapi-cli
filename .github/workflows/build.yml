@@ -1,0 +1,81 @@
+name: Build for external release
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: [self-hosted, linux]
+    container: golang:1.21
+    env:
+      GOFLAGS: -mod=readonly
+      GOPRIVATE: "*.devtools.intel.com"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Adding safe directoty to git config
+        run:  git config --global --add safe.directory /__w/applications.infrastructure.oneapi.oneapi-cli/applications.infrastructure.oneapi.oneapi-cli
+      - name: Build
+        run: ./build.sh
+      - name: Get information about Go runtime version
+        run: go version linux/bin/oneapi-cli > golang-runtime-version.txt
+      - name: Rename Linux build
+        run: mv linux/bin/oneapi-cli linux/bin/oneapi-cli-linux 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: golang-runtime-version
+          path: 
+            golang-runtime-version.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oneapi-cli-linux
+          path: |
+            linux/bin/oneapi-cli-linux
+            LICENSE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-no-sign
+          path: |
+            win/bin/oneapi-cli.exe
+            LICENSE
+  windows-sign:
+    runs-on: [self-hosted, linux]
+    needs: build
+    container: amr-registry.caas.intel.com/idev/signfile:latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-no-sign
+      - name: Sign Windows Binary
+        env:
+          SIGNFILE_USER: '${{ secrets.SIGNFILE_USER}}'
+          SIGNFILE_PASSWORD: '${{ secrets.SIGNFILE_PASSWORD}}'
+        run: /SignFile win/bin/oneapi-cli.exe -u ${SIGNFILE_USER} -p ${SIGNFILE_PASSWORD} -c 'PIDT-X509i-EV-20230523' -ha SHA384
+      - name: Rename oneapi-cli.exe to oneapi-cli-windows.exe
+        run: mv win/bin/oneapi-cli.exe win/bin/oneapi-cli-windows.exe
+      - name: Calculate SHA384 hash for Windows build
+        run: sha384sum win/bin/oneapi-cli-windows.exe > oneapi-cli-windows.exe.sha384
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oneapi-cli-windows
+          path: |
+            win/bin/oneapi-cli-windows.exe
+            LICENSE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oneapi-cli-windows.exe.sha384
+          path: oneapi-cli-windows.exe.sha384
+  linux-hash:
+    runs-on: [self-hosted, linux]
+    needs: [build]
+    container: amr-registry.caas.intel.com/idev/signfile:latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: oneapi-cli-linux
+      - name: Calculate SHA384 hash for Linux build
+        run: sha384sum linux/bin/oneapi-cli-linux > oneapi-cli-linux.sha384
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oneapi-cli-linux.sha384
+          path: oneapi-cli-linux.sha384
