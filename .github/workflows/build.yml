@@ -1,0 +1,50 @@
+name: Build for external release
+on:
+  branch_protection_rule: 
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  build:
+    runs-on: [self-hosted, linux]
+    container: golang:1.21
+    env:
+      GOFLAGS: -mod=readonly
+      GOPRIVATE: "*.devtools.intel.com"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Adding safe directoty to git config
+        run:  git config --global --add safe.directory /__w/oneapi-cli/oneapi-cli
+      - name: Build
+        run: ./build.sh
+      - name: Get information about Go runtime version
+        run: go version linux/bin/oneapi-cli > golang-runtime-version.txt
+      - name: Rename Linux build
+        run: mv linux/bin/oneapi-cli linux/bin/oneapi-cli-linux 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: golang-runtime-version
+          path: 
+            golang-runtime-version.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oneapi-cli-linux
+          path: |
+            linux/bin/oneapi-cli-linux
+            LICENSE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-no-sign
+          path: |
+            win/bin/oneapi-cli.exe
+            LICENSE
+
