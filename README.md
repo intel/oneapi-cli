@@ -18,7 +18,7 @@ go get github.com/intel/oneapi-cli
 Alternatively see the tags/releases for a binary build for your OS.
 
 ## Building
-Go 1.24.4 should be used to build the CLI/TUI app.
+Go 1.24.6 should be used to build the CLI/TUI app.
 
 ```bash
 git clone https://github.com/intel/oneapi-cli.git
