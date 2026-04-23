@@ -1,6 +1,6 @@
 module github.com/intel/oneapi-cli
 
-go 1.24.6
+go 1.26.1
 
 require (
 	github.com/gdamore/tcell v1.4.0
