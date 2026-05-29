@@ -1,4 +1,4 @@
-// Copyright 2019 Intel Corporation
+// Copyright 2019-2026 Intel Corporation
 // SPDX-License-Identifier: BSD-3-Clause
 package extractor
 
@@ -90,5 +90,26 @@ func TestOKTarGz(t *testing.T) {
 	err := ExtractTarGz(oktar, output)
 	if err != nil {
 		t.Error(err) // Failed to run against ok-ish tar
+	}
+}
+
+func TestExtractTarGz_PathTraversalBlocked(t *testing.T) {
+
+	traversalTar := filepath.Join("testdata", "tarslip.tar.gz")
+
+	tempPath := setupGoldTemp(t)
+	defer cleanupTemp(t, tempPath)
+
+	output := filepath.Join(tempPath, "extract")
+
+	err := ExtractTarGz(traversalTar, output)
+	if err == nil {
+		t.Fatal("expected path traversal error, got nil")
+	}
+
+	escapedFile := filepath.Join(tempPath, "TARSLIP_PWNED.txt")
+
+	if _, err := os.Stat(escapedFile); !os.IsNotExist(err) {
+		t.Errorf("path traversal file was created outside extraction dir")
 	}
 }
