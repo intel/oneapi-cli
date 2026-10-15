@@ -1,4 +1,18 @@
 # oneapi-cli tool
+
+## ⚠️ End-of-Life Notice
+
+This project is scheduled to reach its End-of-Life (EOL).
+
+* oneapi-cli for oneAPI is discontinued in the 2026.3.0 release.
+* No further updates or maintenance will be provided after the 2026.3.0 release.
+* Issues and pull requests will no longer be monitored or addressed.
+* The repository may be archived in the near future.
+
+***
+
+## [Original README Content]
+
 [![Go Report Card](https://goreportcard.com/badge/github.com/intel/oneapi-cli)](https://goreportcard.com/report/github.com/intel/oneapi-cli)
 
 `oneapi-cli` is a tool to help you get started with Intel<sup>®</sup> oneAPI
@@ -18,7 +32,7 @@ go get github.com/intel/oneapi-cli
 Alternatively see the tags/releases for a binary build for your OS.
 
 ## Building
-Go 1.26.3 should be used to build the CLI/TUI app.
+Go 1.26.6 should be used to build the CLI/TUI app.
 
 ```bash
 git clone https://github.com/intel/oneapi-cli.git
